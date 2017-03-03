@@ -160,3 +160,7 @@ Hatch offers data preparation in migration section in Egg file.
 ## Hatch result
 
 As mentioned above, Hatch compiles Egg into ready-to-use RESTful API service. You just copy everything in output folder to your production.
+
+## License
+
+Hatch and all corresponding content are released under [MIT License](https://github.com/chonla/hatch/blob/master/LICENSE).
