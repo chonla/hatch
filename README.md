@@ -85,6 +85,45 @@ Most of Egg data type will be rendered as it is. Except the following data types
 | datetime | Date time : 2006-02-14T15:02:12          |
 | files    | Url to download file : http://domain/... |
 
+## Data source name
+
+Datasource name can be defined in Egg file in ```dsn``` key under ```database``` section.
+
+### Data source name example
+
+```json
+{
+    "database" : {
+        "dsn" : "sqlite:./db.sq3"
+    },
+    "entities" : {
+        "person" : {
+            "name" : "short_text",
+            "bio" : "long_text"
+        }
+    }
+}
+```
+
+## Output directory
+
+Output directory stores compiled content. It can be set under ```compiled``` section.
+
+```json
+{
+    "compiled" : "./compiled",
+    "database" : {
+        "dsn" : "sqlite:./db.sq3"
+    },
+    "entities" : {
+        "person" : {
+            "name" : "short_text",
+            "bio" : "long_text"
+        }
+    }
+}
+```
+
 ## Migration
 
 Hatch offers data preparation in migration section in Egg file.
@@ -93,6 +132,10 @@ Hatch offers data preparation in migration section in Egg file.
 
 ```json
 {
+    "compiled" : "./compiled",
+    "database" : {
+        "dsn" : "sqlite:./db.sq3"
+    },
     "entities" : {
         "person" : {
             "name" : "short_text",
