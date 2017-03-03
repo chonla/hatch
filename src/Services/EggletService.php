@@ -5,6 +5,7 @@ namespace App\Services;
 class EggletService {
     private $basic_type = [
         "short_text" => "VARCHAR(256)",
+        "password" => "VARCHAR(128)",
         "long_text" => "TEXT",
         "date" => "INTEGER",
         "datetime" => "INTEGER",
@@ -74,6 +75,45 @@ class EggletService {
                 }
             }
         }
+
+        return $sql;
+    }
+
+    public function prepare_data($tab, $structure, $values) {
+        $auto = false;
+        if (!$this->is_auto_off($structure)) {
+            $structure = $this->add_auto_fields($structure);
+            $auto = true;
+        }
+
+        $sql = [];
+        for ($i = 0, $n = count($values); $i < $n; $i++) {
+            $fields = [];
+            $data_values = [];
+            foreach ($values[$i] as $k => $v) {
+                if ($structure[$k] === "password") {
+                    $fields[] = $k;
+                    $data_values[] = password_hash($v, PASSWORD_BCRYPT);
+                } elseif ($structure[$k] !== "auto") {
+                    $fields[] = $k;
+                    $data_values[] = $v;
+                }
+            }
+            if ($auto) {
+                $now = time();
+                if (!array_key_exists("created_time", $values[$i])) {
+                    $fields[] = 'created_time';
+                    $data_values[] = $now;
+                }
+                if (!array_key_exists("updated_time", $values[$i])) {
+                    $fields[] = 'updated_time';
+                    $data_values[] = $now;
+                }
+            }
+            $sql[] = sprintf("INSERT INTO `%s` (`%s`) VALUES ('%s')", $tab, implode("`,`", $fields), implode("','", $data_values));
+        }
+
+        //print_r($sql);
 
         return $sql;
     }

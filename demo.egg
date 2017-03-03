@@ -7,7 +7,7 @@
     "entities" : {
         "users" : {
             "login" : "short_text",
-            "password" : "short_text"
+            "password" : "password"
         },
         "properties" : {
             "title" : "short_text",
@@ -15,5 +15,11 @@
             "photos" : "files",
             "tags" : "tags"
         }
+    },
+    "migration" : {
+        "users" : [{
+            "login" : "admin",
+            "password" : "123456"
+        }]
     }
 }

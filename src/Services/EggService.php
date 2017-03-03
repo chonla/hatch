@@ -66,6 +66,7 @@ class EggService {
         $this->text("Hatching", sprintf("Incubating %s egglet%s.", $egglet_count, $egglet_count==1?"":"s"));
 
         if (!$this->incubate($egg["database"]["dsn"], $entities)) {
+            $this->err("Unable to create tables to database.");
             return;
         }
 
@@ -124,6 +125,31 @@ class EggService {
         $a->base();
         $a->generate($egg["entities"]);
 
+        // Migration
+        if (array_key_exists("migration", $egg)) {
+            $this->text("Hatching", "Migrating data");
+
+            $data = [];
+            foreach($egg["migration"] as $name => $values) {
+                $result = $egglet->prepare_data($name, $egg["entities"][$name], $values);
+                for ($i = 0, $n = count($result); $i < $n; $i++) {
+                    $data[] = $result[$i];
+                }
+            }
+
+            $data_count = count($data);
+            if ($data_count === 0) {
+                $this->text("Hatching", "Nothing to be migrated?");
+            }
+
+            $this->text("Hatching", sprintf("Importing %s record%s.", $data_count, $data_count==1?"":"s"));
+
+            if (!$this->import_data($egg["database"]["dsn"], $data)) {
+                $this->err("Unable to import data.");
+                return;
+            }
+        }
+
         // Done
         $this->text("Hatching", "Done.");
 
@@ -131,6 +157,14 @@ class EggService {
     }
 
     private function incubate($to, $entities) {
+        return $this->bulk_execute_sql($to, $entities);
+    }
+
+    public function import_data($to, $data) {
+        return $this->bulk_execute_sql($to, $data);
+    }
+
+    private function bulk_execute_sql($to, $sqls) {
         try {
             // Create path for sqlite if need.
             if (preg_match('/^sqlite:(.+)$/', $to, $match)) {
@@ -146,8 +180,8 @@ class EggService {
             // Spin things up
             $db = new \PDO($to);
 
-            foreach ($entities as $entity) {
-                $db->query($entity);
+            foreach ($sqls as $sql) {
+                $db->query($sql);
             }
         } catch(PDOException $e) {
             $this->err($e);
