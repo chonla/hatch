@@ -1,0 +1,19 @@
+{
+    "name" : "Demo Service",
+    "compiled" : "./compiled",
+    "database" : {
+        "dsn" : "sqlite:./db/demo.sq3"
+    },
+    "entities" : {
+        "users" : {
+            "login" : "short_text",
+            "password" : "short_text"
+        },
+        "properties" : {
+            "title" : "short_text",
+            "detail" : "long_text",
+            "photos" : "files",
+            "tags" : "tags"
+        }
+    }
+}

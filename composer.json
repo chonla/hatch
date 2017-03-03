@@ -1,0 +1,13 @@
+{
+    "name": "Hatch",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src"
+        }
+    },
+    "require": {
+        "nategood/commando": "^0.2.9",
+        "webmozart/json": "^1.2",
+        "kevinlebrun/colors.php": "~0.2"
+    }
+}
