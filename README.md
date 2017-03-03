@@ -56,7 +56,7 @@ Hatch will automatically put following attributes to each egg.
 }
 ```
 
-The above egg will results of 2 tables:
+The above egg gives results of 2 tables:
 
 Table : **person**
 
