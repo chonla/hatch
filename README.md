@@ -6,7 +6,7 @@ Entities Driven RESTful API builder.
 
 * Hatch creates API on top of Slim framework.
 
-## What Hatch does?
+## What does Hatch do?
 
 Hatch compiles a configuration file, call Egg, and generates a result into a path.
 
