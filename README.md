@@ -161,6 +161,10 @@ Hatch offers data preparation in migration section in Egg file.
 
 As mentioned above, Hatch compiles Egg into ready-to-use RESTful API service. You just copy everything in output folder to your production.
 
+## Troubleshooting
+
+If you have error with getting composer, visit https://getcomposer.org/doc/articles/troubleshooting.md for detail.
+
 ## License
 
 Hatch and all corresponding content are released under [MIT License](https://github.com/chonla/hatch/blob/master/LICENSE).
