@@ -75,15 +75,14 @@ Table : **person_photo**
 | id    | int         | No            |
 | photo | varchar(32) | -             |
 
-### Egg rendering (To be implemented later)
+### Egg rendering
 
 Most of Egg data type will be rendered as it is. Except the following data types will be rendered with following format:
 
-| Type     | Filter                                   |
-| -------- | ---------------------------------------- |
-| date     | Date only : 2006-02-14                   |
-| datetime | Date time : 2006-02-14T15:02:12          |
-| files    | Url to download file : http://domain/... |
+| Type     | Filter                                     |
+| -------- | ------------------------------------------ |
+| date     | Date only : 2006-02-14                     |
+| datetime | Date time : 2006-02-14T15:02:12 (ISO 8601) |
 
 ## Data source name
 

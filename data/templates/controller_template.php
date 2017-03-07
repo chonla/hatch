@@ -7,6 +7,7 @@ class {{%class_name%}}Controller extends ControllerBase {
     function __construct(\Slim\Container $ci) {
         $this->table = "{{%entity_name%}}";
         $this->relative_list = [{{%relative_list%}}];
+        $this->filter = [{{%filter_list%}}];
         parent::__construct($ci);
     }
 

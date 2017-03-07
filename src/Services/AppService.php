@@ -7,6 +7,11 @@ class AppService {
     private $options;
     private $egglet;
 
+    private $type_filter = [
+        'datetime',
+        'date',
+    ];
+
     function __construct($resource, $options = []) {
         $this->path = $resource;
         $this->options = $options;
@@ -15,10 +20,12 @@ class AppService {
 
     function scaffold() {
         @mkdir("src/Controllers", 0755, true);
+        @mkdir("src/Services", 0755, true);
     }
 
     function base() {
         copy(sprintf("%s/templates/controller_base.php", $this->path), "src/Controllers/ControllerBase.php");
+        copy(sprintf("%s/templates/service_filter.php", $this->path), "src/Services/FilterService.php");
         copy(sprintf("%s/templates/index.php", $this->path), "index.php");
         copy(sprintf("%s/templates/middlewares.php", $this->path), "src/middlewares.php");
         copy(sprintf("%s/templates/dependencies.php", $this->path), "src/dependencies.php");
@@ -66,10 +73,16 @@ class AppService {
         $filename = sprintf("src/Controllers/%sController.php", $class);
         $template = sprintf("%s/templates/controller_template.php", $this->path);
 
+        $structure = $this->egglet->add_auto_fields($structure);
+
         $bloat = [];
+        $filter = [];
         foreach ($structure as $k => $v) {
             if ($this->egglet->is_bloat_type($v)) {
                 $bloat[] = $k;
+            }
+            if (in_array($v, $this->type_filter)) {
+                $filter[] = sprintf("'%s' => '%s'", $k, $v);
             }
         }
 
@@ -77,11 +90,17 @@ class AppService {
         if (count($bloat) > 0) {
             $relative_list = sprintf("'%s'", implode("','", $bloat));
         }
+
+        $filter_list = '';
+        if (count($filter) > 0) {
+            $filter_list = sprintf("%s", implode(",", $filter));
+        }
         
         $vars = [
             "class_name" => $class,
             "entity_name" => $name,
             "relative_list" => $relative_list,
+            "filter_list" => $filter_list,
         ];
 
         $this->create_file_from_template($template, $vars, $filename);

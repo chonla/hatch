@@ -152,9 +152,9 @@ class EggService {
         }
 
         // Done
-        $this->text("Hatching", "Done.");
+        $this->text("Hatching", "Done. Chirp chirp!");
 
-        $this->text("Hatching", "Thank you for using Hatch. You may copy all content in path ${compiled_path} to your server. Enjoy RESTful API from Hatch!");
+        $this->text("Hatching", "Thank you for hatching some eggs. You may copy all content in path ${compiled_path} to your server. Enjoy RESTful API from Hatch!");
     }
 
     private function incubate($to, $entities) {

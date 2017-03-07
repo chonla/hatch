@@ -9,3 +9,10 @@ $container['r'] = function ($c) {
     $r->setup($settings['dsn']);
     return $r;
 };
+
+// filter
+$container['data_filter'] = function ($c) {
+    $settings = $c->get('settings')['data_filter'];
+    $f = new \App\Services\FilterService($settings);
+    return $f;
+};

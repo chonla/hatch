@@ -153,6 +153,9 @@ class EggletService {
     }
 
     public function add_auto_fields($structure) {
+        if ($this->is_auto_off($structure)) {
+            return $structure;
+        }
         return array_merge(array_merge($this->auto_fields_pre, $structure), $this->auto_fields_post);
     }
 

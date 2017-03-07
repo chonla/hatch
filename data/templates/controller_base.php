@@ -33,6 +33,16 @@ class ControllerBase {
         return $out;
     }
 
+    private function apply_filter($element) {
+        $filter = $this->ci->get('data_filter');
+        foreach ($element as $k => $v) {
+            if (array_key_exists($k, $this->filter)) {
+                $element[$k] = $filter->apply($this->filter[$k], $v);
+            }
+        }
+        return $element;
+    }
+
     public function getElement($request, $response, $args) {
         $R = $this->ci->get('r');
 
@@ -41,6 +51,10 @@ class ControllerBase {
 
         if (count($this->relative_list) > 0) {
             $element = $this->expand($element);
+        }
+
+        if (count($this->filter) > 0) {
+            $element = $this->apply_filter($element);
         }
 
         return $response->withJson($element);
@@ -65,6 +79,18 @@ class ControllerBase {
         $api_url = strtok($request->getUri()->__toString(), '?');
 
         $all = array_values($R->findAll($this->table, sprintf(' ORDER BY id LIMIT %d OFFSET %d ', $page_size, $from_row)));
+
+        if (count($this->relative_list) > 0) {
+            for ($i = 0, $n = count($all); $i < $n; $i++) {
+                $all[$i] = $this->expand($all[$i]);
+            }
+        }
+
+        if (count($this->filter) > 0) {
+            for ($i = 0, $n = count($all); $i < $n; $i++) {
+                $all[$i] = $this->apply_filter($all[$i]);
+            }
+        }
 
         $attributes = [
             'row_count' => $count,
