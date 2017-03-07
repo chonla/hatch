@@ -16,14 +16,16 @@ class EggletService {
             "@" => [
                 "auto" => false,
             ],
-            "id" => "INTEGER",
+            "id" => "auto",
+            "%%_id" => "INTEGER",
             "$$" => "VARCHAR(32)"
         ],
         "tags" => [
             "@" => [
                 "auto" => false,
             ],
-            "id" => "INTEGER",
+            "id" => "auto",
+            "%%_id" => "INTEGER",
             "$$" => "VARCHAR(50)"
         ],
     ];
@@ -58,7 +60,7 @@ class EggletService {
                 if ($this->is_basic_type($type)) {
                     $fields[] = sprintf("`%s` %s", $name, $this->basic_type[$type]);
                 } elseif ($this->is_bloat_type($type)) {
-                    $bloat[sprintf("%s_%s", $tab, $name)] = $this->bloat($name, $type);
+                    $bloat[sprintf("%s_%s", $tab, $name)] = $this->bloat($tab, $name, $type);
                 } else {
                     $fields[] = sprintf("`%s` %s", $name, strtoupper($type));
                 }
@@ -130,20 +132,21 @@ class EggletService {
 
         $out = [];
         foreach ($data as $v) {
-            $out[] = sprintf("INSERT INTO `%s` (`id`, `%s`) VALUES ('{{%%last_id%%}}', '%s')", $tab, $child, $v);
+            $out[] = sprintf("INSERT INTO `%s` (`%s_id`, `%s`) VALUES ('{{%%last_id%%}}', '%s')", $tab, $base, $child, $v);
         }
 
         return $out;
     }
 
-    private function bloat($bloat_name, $bloat_type) {
+    private function bloat($base, $bloat_name, $bloat_type) {
         $structure = $this->bloat_type[$bloat_type];
         $out = [];
         foreach ($structure as $name => $type) {
             if ($name === "$$") {
                 $out[$bloat_name] = $type;
             } else {
-                $out[$name] = $type;
+                $new_name = str_replace("%%", $base, $name);
+                $out[$new_name] = $type;
             }
         }
         return $out;

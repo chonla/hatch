@@ -18,7 +18,7 @@ class ControllerBase {
 
         // expand record with relative table
         for ($i = 0; $i < $this->relative_list_count; $i++) {
-            $ex = $R->findAll(sprintf("%s_%s", $this->table, $this->relative_list[$i]), 'id=:id', [':id'=>$element->id]);
+            $ex = $R->find(sprintf("%s_%s", $this->table, $this->relative_list[$i]), sprintf('%s_id=:id', $this->table), [':id'=>$element->id]);
             $element[$this->relative_list[$i]] = $this->flat($ex, $this->relative_list[$i]);
         }
 
