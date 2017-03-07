@@ -5,10 +5,12 @@ namespace App\Services;
 class AppService {
     private $path;
     private $options;
+    private $egglet;
 
     function __construct($resource, $options = []) {
         $this->path = $resource;
         $this->options = $options;
+        $this->egglet = $options["egglet"];
     }
 
     function scaffold() {
@@ -63,10 +65,23 @@ class AppService {
         $class = $this->safe_class_name($name);
         $filename = sprintf("src/Controllers/%sController.php", $class);
         $template = sprintf("%s/templates/controller_template.php", $this->path);
+
+        $bloat = [];
+        foreach ($structure as $k => $v) {
+            if ($this->egglet->is_bloat_type($v)) {
+                $bloat[] = $k;
+            }
+        }
+
+        $relative_list = '';
+        if (count($bloat) > 0) {
+            $relative_list = sprintf("'%s'", implode("','", $bloat));
+        }
         
         $vars = [
             "class_name" => $class,
             "entity_name" => $name,
+            "relative_list" => $relative_list,
         ];
 
         $this->create_file_from_template($template, $vars, $filename);

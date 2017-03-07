@@ -120,6 +120,7 @@ class EggService {
         $this->text("Hatching", "Scaffolding application.");
         $a = new AppService("../data", [
             "dsn" => $egg["database"]["dsn"],
+            "egglet" => $egglet,
         ]);
         $a->scaffold();
         $a->base();
@@ -140,13 +141,13 @@ class EggService {
             $data_count = count($data);
             if ($data_count === 0) {
                 $this->text("Hatching", "Nothing to be migrated?");
-            }
+            } else {
+                $this->text("Hatching", sprintf("Importing %s record%s.", $data_count, $data_count==1?"":"s"));
 
-            $this->text("Hatching", sprintf("Importing %s record%s.", $data_count, $data_count==1?"":"s"));
-
-            if (!$this->import_data($egg["database"]["dsn"], $data)) {
-                $this->err("Unable to import data.");
-                return;
+                if (!$this->import_data($egg["database"]["dsn"], $data)) {
+                    $this->err("Unable to import data.");
+                    return;
+                }
             }
         }
 
@@ -179,9 +180,16 @@ class EggService {
 
             // Spin things up
             $db = new \PDO($to);
+            $lastid = 0;
 
             foreach ($sqls as $sql) {
-                $db->query($sql);
+                if ($sql[0] === "\t") {
+                    $sql = preg_replace("/\{\{%last_id%\}\}/", $lastid, $sql, -1);
+                    $db->query($sql);
+                } else {
+                    $db->query($sql);
+                    $lastid = $db->lastInsertId();
+                }
             }
         } catch(PDOException $e) {
             $this->err($e);

@@ -90,10 +90,13 @@ class EggletService {
         for ($i = 0, $n = count($values); $i < $n; $i++) {
             $fields = [];
             $data_values = [];
+            $bloat = [];
             foreach ($values[$i] as $k => $v) {
                 if ($structure[$k] === "password") {
                     $fields[] = $k;
                     $data_values[] = password_hash($v, PASSWORD_BCRYPT);
+                } elseif ($this->is_bloat_type($structure[$k])) {
+                    $bloat = array_merge($bloat, $this->bloat_data($tab, $k, $v));
                 } elseif ($structure[$k] !== "auto") {
                     $fields[] = $k;
                     $data_values[] = $v;
@@ -111,11 +114,26 @@ class EggletService {
                 }
             }
             $sql[] = sprintf("INSERT INTO `%s` (`%s`) VALUES ('%s')", $tab, implode("`,`", $fields), implode("','", $data_values));
+
+            if (count($bloat) > 0) {
+                for ($j = 0, $m = count($bloat); $j < $m; $j++) {
+                    $sql[] = "\t" . $bloat[$j];
+                }
+            }
         }
 
-        //print_r($sql);
-
         return $sql;
+    }
+
+    private function bloat_data($base, $child, $data) {
+        $tab = sprintf("%s_%s", $base, $child);
+
+        $out = [];
+        foreach ($data as $v) {
+            $out[] = sprintf("INSERT INTO `%s` (`id`, `%s`) VALUES ('{{%%last_id%%}}', '%s')", $tab, $child, $v);
+        }
+
+        return $out;
     }
 
     private function bloat($bloat_name, $bloat_type) {
@@ -146,7 +164,7 @@ class EggletService {
         return (array_key_exists($type, $this->basic_type));
     }
 
-    private function is_bloat_type($type) {
+    public function is_bloat_type($type) {
         return (array_key_exists($type, $this->bloat_type));
     }
 

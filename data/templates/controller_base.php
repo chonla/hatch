@@ -4,10 +4,46 @@ namespace App\Controllers;
 
 class ControllerBase {
     protected $table;
+    protected $relative_list;
+    private $relative_list_count;
 
     function __construct(\Slim\Container $ci) {
         $this->ci = $ci;
         $this->conf = $this->ci->get('settings')['restful'];
+        $this->relative_list_count = count($this->relative_list);
+    }
+
+    private function expand($element) {
+        $R = $this->ci->get('r');
+
+        // expand record with relative table
+        for ($i = 0; $i < $this->relative_list_count; $i++) {
+            $ex = $R->findAll(sprintf("%s_%s", $this->table, $this->relative_list[$i]), 'id=:id', [':id'=>$element->id]);
+            $element[$this->relative_list[$i]] = $this->flat($ex, $this->relative_list[$i]);
+        }
+
+        return $element;
+    }
+
+    private function flat($arr, $field_name) {
+        $out = [];
+        foreach ($arr as $obj) {
+            $out[] = $obj[$field_name];
+        }
+        return $out;
+    }
+
+    public function getElement($request, $response, $args) {
+        $R = $this->ci->get('r');
+
+        $id = $args['id'];
+        $element = $R->findOne($this->table, 'id=:id', [':id'=>$id]);
+
+        if (count($this->relative_list) > 0) {
+            $element = $this->expand($element);
+        }
+
+        return $response->withJson($element);
     }
 
     public function getCollection($request, $response, $args) {
