@@ -133,8 +133,13 @@ class EggService {
             $data = [];
             foreach($egg["migration"] as $name => $values) {
                 $result = $egglet->prepare_data($name, $egg["entities"][$name], $values);
-                for ($i = 0, $n = count($result); $i < $n; $i++) {
-                    $data[] = $result[$i];
+                if ($result !== FALSE) {
+                    for ($i = 0, $n = count($result); $i < $n; $i++) {
+                        $data[] = $result[$i];
+                    }
+                } else {
+                    $this->err("Unable to collect data being imported. Data structure may no be compatible with egg schema. Please verify your data and re-hatch.");
+                    return;
                 }
             }
 

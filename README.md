@@ -16,13 +16,16 @@ Egg is entities list telling Hatch what entity, so called Egglet, to be created.
 
 ### Egg data type mapping
 
-| Type       | DB Type      | Description           |
-| ---------- | ------------ | --------------------- |
-| short_text | varchar(256) | -                     |
-| long_text  | text         | -                     |
-| datetime   | int          | -                     |
-| date       | int          | -                     |
-| auto       | int          | Autoincrement integer |
+| Type            | DB Type       | Description           |
+| --------------- | ------------  | --------------------- |
+| very_short_text | varchar(64)   | -                     |
+| short_text      | varchar(128)  | -                     |
+| medium_text     | varchar(256)  | -                     |
+| long_text       | varchar(1024) | -                     |
+| very_long_text  | text          | -                     |
+| datetime        | int           | -                     |
+| date            | int           | -                     |
+| auto            | int           | Autoincrement integer |
 
 ### Egg special data type
 

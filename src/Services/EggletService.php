@@ -4,9 +4,12 @@ namespace App\Services;
 
 class EggletService {
     private $basic_type = [
-        "short_text" => "VARCHAR(256)",
+        "very_long_text" => "TEXT",
+        "long_text" => "VARCHAR(1024)",
+        "medium_text" => "VARCHAR(256)",
+        "short_text" => "VARCHAR(128)",
+        "very_short_text" => "VARCHAR(64)",
         "password" => "VARCHAR(128)",
-        "long_text" => "TEXT",
         "date" => "INTEGER",
         "datetime" => "INTEGER",
         "auto" => "INTEGER NOT NULL AUTO_INCREMENT",
@@ -94,14 +97,18 @@ class EggletService {
             $data_values = [];
             $bloat = [];
             foreach ($values[$i] as $k => $v) {
-                if ($structure[$k] === "password") {
-                    $fields[] = $k;
-                    $data_values[] = password_hash($v, PASSWORD_BCRYPT);
-                } elseif ($this->is_bloat_type($structure[$k])) {
-                    $bloat = array_merge($bloat, $this->bloat_data($tab, $k, $v));
-                } elseif ($structure[$k] !== "auto") {
-                    $fields[] = $k;
-                    $data_values[] = $v;
+                if (array_key_exists($k, $structure)) {
+                    if ($structure[$k] === "password") {
+                        $fields[] = $k;
+                        $data_values[] = password_hash($v, PASSWORD_BCRYPT);
+                    } elseif ($this->is_bloat_type($structure[$k])) {
+                        $bloat = array_merge($bloat, $this->bloat_data($tab, $k, $v));
+                    } elseif ($structure[$k] !== "auto") {
+                        $fields[] = $k;
+                        $data_values[] = $v;
+                    }
+                } else {
+                    return FALSE;
                 }
             }
             if ($auto) {

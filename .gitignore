@@ -2,3 +2,6 @@ vendor/
 .tmp/
 compiled/
 composer.lock
+*.egg
+!demo.egg
+!empty.egg
