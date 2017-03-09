@@ -14,9 +14,28 @@
             "detail" : "long_text",
             "photos" : "files",
             "tags" : "tags"
+        },
+        "demo" : {
+            "@" : {
+                "private" : [
+                    "hide_me"
+                ]
+            },
+            "name" : "short_text",
+            "hide_me" : "password"
         }
     },
     "migration" : {
+        "demo" : [
+            {
+                "name" : "Demo name",
+                "hide_me" : "this should not be exposed"
+            },
+            {
+                "name" : "Demo name 2",
+                "hide_me" : "this should not be exposed too"
+            }
+        ],
         "users" : [
             {
                 "login" : "admin",

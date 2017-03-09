@@ -78,11 +78,13 @@ class AppService {
         $bloat = [];
         $filter = [];
         foreach ($structure as $k => $v) {
-            if ($this->egglet->is_bloat_type($v)) {
-                $bloat[] = $k;
-            }
-            if (in_array($v, $this->type_filter)) {
-                $filter[] = sprintf("'%s' => '%s'", $k, $v);
+            if ($k !== "@") {
+                if ($this->egglet->is_bloat_type($v)) {
+                    $bloat[] = $k;
+                }
+                if (in_array($v, $this->type_filter)) {
+                    $filter[] = sprintf("'%s' => '%s'", $k, $v);
+                }
             }
         }
 
@@ -95,12 +97,24 @@ class AppService {
         if (count($filter) > 0) {
             $filter_list = sprintf("%s", implode(",", $filter));
         }
+
+        $private_list = "";
+        if (array_key_exists("@", $structure) && array_key_exists("private", $structure["@"])) {
+            $private_list = sprintf("'%s'", implode("','", $structure["@"]["private"]));
+        }
+
+        $sort_by = "";
+        if (array_key_exists("@", $structure) && array_key_exists("auto", $structure["@"])) {
+            $sort_by = $structure["@"]["auto"]?"id":"";
+        }
         
         $vars = [
             "class_name" => $class,
             "entity_name" => $name,
             "relative_list" => $relative_list,
             "filter_list" => $filter_list,
+            "private_list" => $private_list,
+            "sort_by" => $sort_by,
         ];
 
         $this->create_file_from_template($template, $vars, $filename);
