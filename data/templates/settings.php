@@ -3,8 +3,10 @@
 return [
     "settings" => [
         "displayErrorDetails" => true,
-        "r" => [
-            "dsn" => "{{%dsn%}}"
+        "database" => [
+            "dsn" => "{{%db_dsn%}}",
+            "user" => "{{%db_user%}}",
+            "password" => "{{%db_password%}}"
         ],
         'restful' => [
             'page_size' => 30,

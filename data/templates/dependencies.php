@@ -2,12 +2,11 @@
 
 $container = $app->getContainer();
 
-// redbean
-$container['r'] = function ($c) {
-    $settings = $c->get('settings')['r'];
-    $r = new \RedBeanPHP\R();
-    $r->setup($settings['dsn']);
-    return $r;
+// service
+$container['data_service'] = function ($c) {
+    $settings = $c->get('settings')['database'];
+    $data = new \App\Services\DataService($settings);
+    return $data;
 };
 
 // filter

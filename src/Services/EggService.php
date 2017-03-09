@@ -85,7 +85,6 @@ class EggService {
             ],
             "require" => [
                 "slim/slim" => "^3.0",
-                "gabordemooij/redbean" => "dev-master",
             ]
         ];
 
@@ -118,8 +117,12 @@ class EggService {
 
         // Template application
         $this->text("Hatching", "Scaffolding application.");
+        $db_user = array_key_exists("user", $egg["database"])?$egg["database"]["user"]:"";
+        $db_password = array_key_exists("password", $egg["database"])?$egg["database"]["password"]:"";
         $a = new AppService("../data", [
-            "dsn" => $egg["database"]["dsn"],
+            "db_dsn" => $egg["database"]["dsn"],
+            "db_user" => $db_user,
+            "db_password" => $db_password,
             "egglet" => $egglet,
         ]);
         $a->scaffold();

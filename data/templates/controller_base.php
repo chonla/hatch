@@ -16,11 +16,11 @@ class ControllerBase {
     }
 
     private function expand($element) {
-        $R = $this->ci->get('r');
-
+        $db = $this->ci->get('data_service');
+        
         // expand record with relative table
         for ($i = 0; $i < $this->relative_list_count; $i++) {
-            $ex = $R->find(sprintf("%s_%s", $this->table, $this->relative_list[$i]), sprintf('%s_id=:id', $this->table), [':id'=>$element->id]);
+            $ex = $db->findAll(sprintf("%s_%s", $this->table, $this->relative_list[$i]), sprintf('%s_id=:id', $this->table), [':id'=>$element['id']]);
             $element[$this->relative_list[$i]] = $this->flat($ex, $this->relative_list[$i]);
         }
 
@@ -47,18 +47,18 @@ class ControllerBase {
 
     private function privatize($element) {
         for ($i = 0, $n = count($this->private_list); $i < $n; $i++) {
-            if ($element->__isset($this->private_list[$i])) {
-                $element->__unset($this->private_list[$i]);
+            if (array_key_exists($this->private_list[$i], $element)) {
+                unset($element[$this->private_list[$i]]);
             }
         }
         return $element;
     }
 
     public function getElement($request, $response, $args) {
-        $R = $this->ci->get('r');
+        $db = $this->ci->get('data_service');
 
         $id = $args['id'];
-        $element = $R->findOne($this->table, 'id=:id', [':id'=>$id]);
+        $element = $db->findOne($this->table, 'id=:id', [':id'=>$id]);
 
         if (count($this->private_list) > 0) {
             $element = $this->privatize($element);
@@ -76,7 +76,7 @@ class ControllerBase {
     }
 
     public function getCollection($request, $response, $args) {
-        $R = $this->ci->get('r');
+        $db = $this->ci->get('data_service');
 
         $current_page = $request->getQueryParam('page', '1');
         if (!preg_match('/^\d+$/', $current_page)) {
@@ -84,7 +84,7 @@ class ControllerBase {
         }
 
         $current_page = intVal($current_page);
-        $count = $R->count($this->table);
+        $count = $db->count($this->table);
         $page_size = $this->conf['page_size'];
         $page_count = 1;
         if ($count > 0) {
@@ -93,12 +93,7 @@ class ControllerBase {
         $from_row = (($current_page - 1) * $page_size);
         $api_url = strtok($request->getUri()->__toString(), '?');
 
-        $ordering = '';
-        if ($this->sort_by !== '') {
-            $ordering = sprintf(' ORDER BY %s', $this->sort_by);
-        }
-
-        $all = array_values($R->findAll($this->table, sprintf(' %s LIMIT %d OFFSET %d ', $ordering, $page_size, $from_row)));
+        $all = array_values($db->findAll($this->table, '', [], $this->sort_by, $page_size, $current_page));
 
         if (count($this->private_list) > 0) {
             for ($i = 0, $n = count($all); $i < $n; $i++) {

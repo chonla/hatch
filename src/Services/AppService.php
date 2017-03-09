@@ -26,12 +26,15 @@ class AppService {
     function base() {
         copy(sprintf("%s/templates/controller_base.php", $this->path), "src/Controllers/ControllerBase.php");
         copy(sprintf("%s/templates/service_filter.php", $this->path), "src/Services/FilterService.php");
+        copy(sprintf("%s/templates/service_data.php", $this->path), "src/Services/DataService.php");
         copy(sprintf("%s/templates/index.php", $this->path), "index.php");
         copy(sprintf("%s/templates/middlewares.php", $this->path), "src/middlewares.php");
         copy(sprintf("%s/templates/dependencies.php", $this->path), "src/dependencies.php");
 
         $settings_vars = [
-            "dsn" => $this->options["dsn"],
+            "db_dsn" => $this->options["db_dsn"],
+            "db_user" => $this->options["db_user"],
+            "db_password" => $this->options["db_password"],
         ];
         $this->create_file_from_template(sprintf("%s/templates/settings.php", $this->path), $settings_vars, "src/settings.php");
     }
