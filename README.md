@@ -193,6 +193,10 @@ Hatch offers data preparation in migration section in Egg file.
 }
 ```
 
+## CORS Support
+
+Hatch, by default, grants requests from any origin. However, you can configure CORS setting in Egg before running Hatch or do it later in compiled output in ```src/middlewares.php```.
+
 ## Hatch result
 
 As mentioned above, Hatch compiles Egg into ready-to-use RESTful API service. You just copy everything in output folder to your production.
