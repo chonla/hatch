@@ -28,8 +28,17 @@ class AppService {
         copy(sprintf("%s/templates/service_filter.php", $this->path), "src/Services/FilterService.php");
         copy(sprintf("%s/templates/service_data.php", $this->path), "src/Services/DataService.php");
         copy(sprintf("%s/templates/index.php", $this->path), "index.php");
-        copy(sprintf("%s/templates/middlewares.php", $this->path), "src/middlewares.php");
         copy(sprintf("%s/templates/dependencies.php", $this->path), "src/dependencies.php");
+
+        $cors_vars = [
+            "cors_origin" => $this->options["cors_origin"],
+            "cors_methods" => $this->options["cors_methods"],
+            "cors_headers_allow" => $this->options["cors_headers_allow"],
+            "cors_headers_expose" => $this->options["cors_headers_expose"],
+            "cors_credentials" => $this->options["cors_credentials"],
+            "cors_cache" => $this->options["cors_cache"],
+        ];
+        $this->create_file_from_template(sprintf("%s/templates/middlewares.php", $this->path), $cors_vars, "src/middlewares.php");
 
         $settings_vars = [
             "db_dsn" => $this->options["db_dsn"],
@@ -134,6 +143,13 @@ class AppService {
 
     private function apply_vars($content, $vars) {
         foreach ($vars as $k => $v) {
+            if ($v === false) {
+                $v = "false";
+            } elseif ($v === true) {
+                $v = "true";
+            } elseif (is_array($v)) {
+                $v = sprintf("'%s'", implode("','", $v));
+            }
             $content = preg_replace("/\{\{%$k%\}\}/", $v, $content, -1);
         }
 

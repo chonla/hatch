@@ -80,12 +80,13 @@ class EggService {
             "description" => $proj_description,
             "autoload" => [
                 "psr-4" => [
-                    "App\\"=> "src"
+                    "App\\"=> "src",
                 ],
             ],
             "require" => [
                 "slim/slim" => "^3.0",
-            ]
+                "tuupola/cors-middleware" => "^0.5",
+            ],
         ];
 
         $encoder = new \Webmozart\Json\JsonEncoder();
@@ -119,10 +120,32 @@ class EggService {
         $this->text("Hatching", "Scaffolding application.");
         $db_user = array_key_exists("user", $egg["database"])?$egg["database"]["user"]:"";
         $db_password = array_key_exists("password", $egg["database"])?$egg["database"]["password"]:"";
+
+        $cors_origin = ["*"];
+        $cors_methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+        $cors_headers_allow = [];
+        $cors_headers_expose = [];
+        $cors_credentials = false;
+        $cors_cache = 0;
+        if (array_key_exists("cors", $egg)) {
+            $cors_origin = array_key_exists("origin", $egg["cors"])?$egg["cors"]["origin"]:["*"];
+            $cors_methods = array_key_exists("methods", $egg["cors"])?$egg["cors"]["methods"]:["GET", "POST", "PUT", "PATCH", "DELETE"];
+            $cors_headers_allow = array_key_exists("headers.allow", $egg["cors"])?$egg["cors"]["headers.allow"]:[];
+            $cors_headers_expose = array_key_exists("headers.expose", $egg["cors"])?$egg["cors"]["headers.expose"]:[];
+            $cors_credentials = array_key_exists("credentials", $egg["cors"])?$egg["cors"]["credentials"]:false;
+            $cors_cache = array_key_exists("cache", $egg["cors"])?$egg["cors"]["cache"]:0;
+        }
+
         $a = new AppService("../data", [
             "db_dsn" => $egg["database"]["dsn"],
             "db_user" => $db_user,
             "db_password" => $db_password,
+            "cors_origin" => $cors_origin,
+            "cors_methods" => $cors_methods,
+            "cors_headers_allow" => $cors_headers_allow,
+            "cors_headers_expose" => $cors_headers_expose,
+            "cors_credentials" => $cors_credentials,
+            "cors_cache" => $cors_cache,
             "egglet" => $egglet,
         ]);
         $a->scaffold();

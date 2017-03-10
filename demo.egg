@@ -4,6 +4,14 @@
     "database" : {
         "dsn" : "sqlite:./db/demo.sq3"
     },
+    "cors" : {
+        "origin" : ["*"],
+        "methods" : ["GET", "POST", "PUT", "PATCH", "DELETE"],
+        "headers.allow" : [],
+        "headers.expose" : [],
+        "credentials" : false,
+        "cache" : 0
+    },
     "entities" : {
         "users" : {
             "login" : "short_text",
