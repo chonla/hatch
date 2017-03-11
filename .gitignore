@@ -1,5 +1,6 @@
 vendor/
 .tmp/
+*_compiled/
 compiled/
 composer.lock
 *.egg
