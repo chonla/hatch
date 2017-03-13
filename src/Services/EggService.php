@@ -59,7 +59,9 @@ class EggService {
         // Done
         $this->text("Hatching", "Done. Chirp chirp!");
 
-        $this->text("Hatching", sprintf("Thank you for creating a new eggs. You may edit the egg \"%s\" and hatch it when you are ready. Enjoy RESTful API from Hatch!", $eggfile));
+        $this->text("Hatching", "Thank you for creating a new eggs.");
+        $this->text(" -", sprintf("You may edit the egg \"%s\" and hatch it when you are ready.", $eggfile));
+        $this->text("Hatching", "Enjoy RESTful API from Hatch!");
     }
 
     function hatch($eggfile) {
