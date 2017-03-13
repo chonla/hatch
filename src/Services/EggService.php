@@ -92,6 +92,7 @@ class EggService {
         if (!is_dir($compiled_path)) {
             @mkdir($compiled_path, 0777, true);
         }
+        $meta_path = getcwd() . "/meta";
         chdir($compiled_path);
 
         $this->text("Hatching", "Constructing database.");
@@ -119,7 +120,7 @@ class EggService {
             $result = $egglet->meta($name, $entity);
             $meta = array_merge($meta, $result);
         }
-        file_put_contents("./meta.json", json_encode($meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $this->export_meta($meta, $meta_path);
 
         $egglet_count = count($entities);
         if ($egglet_count === 0) {
@@ -257,12 +258,42 @@ class EggService {
 
         $this->text("Hatching", "Thank you for hatching some eggs.");
         $this->text("  -", sprintf("You may copy all content in path %s to your server.", $compiled_path));
-        $this->text("  -", sprintf("If you are using Shelf, you can use \"meta.json\" in %s to generate form.", $compiled_path));
+        $this->text("  -", "If you are using Shelf, you can use meta data in \"meta/ng2\" directory to generate form in Shelf.");
         $this->text("Hatching", "Enjoy RESTful API from Hatch!");
     }
 
     private function incubate($to, $entities) {
         return $this->bulk_execute_sql($to, $entities);
+    }
+
+    private function export_meta($meta, $meta_path) {
+        $m = json_encode($meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        // write meta
+        $path = sprintf("%s/json", $meta_path);
+        if (!is_dir($path)) {
+            @mkdir($path, 0777, true);
+        }
+        file_put_contents(sprintf("%s/meta.json", $path), $m);
+
+        // write ng2
+        $path = sprintf("%s/ng2", $meta_path);
+        if (!is_dir($path)) {
+            @mkdir($path, 0777, true);
+        }
+        $tmpl =<<<EOTMPL
+import { Injectable } from '@angular/core';
+@Injectable()
+export class AppConfig {
+    private config: Object = %s;
+    constructor() {}
+
+    get(key: any) {
+        return this.config[key];
+    }
+}
+EOTMPL;
+        file_put_contents(sprintf("%s/app.config.ts", $path), sprintf($tmpl, $m));
     }
 
     public function import_data($to, $data) {
