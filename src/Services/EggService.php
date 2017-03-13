@@ -284,7 +284,7 @@ class EggService {
         $tmpl =<<<EOTMPL
 import { Injectable } from '@angular/core';
 @Injectable()
-export class AppConfig {
+export class HatchMetaConfig {
     private config: Object = %s;
     constructor() {}
 
@@ -293,7 +293,7 @@ export class AppConfig {
     }
 }
 EOTMPL;
-        file_put_contents(sprintf("%s/app.config.ts", $path), sprintf($tmpl, $m));
+        file_put_contents(sprintf("%s/hatchmeta.config.ts", $path), sprintf($tmpl, $m));
     }
 
     public function import_data($to, $data) {
