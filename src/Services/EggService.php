@@ -92,12 +92,14 @@ class EggService {
         }
         chdir($compiled_path);
 
+        $this->text("Hatching", "Constructing database.");
         // Create Egglets
         if (!array_key_exists("database", $egg) || !array_key_exists("dsn", $egg["database"]) || $egg["database"]["dsn"] === "") {
             $this->err("DSN is required to create Egglet, but no DSN is specified.");
             return;
         }
 
+        $this->text("  -", "Determining entities.");
         $egglet = new EggletService();
         list($dbtype, $dummy) = explode(":", $egg["database"]["dsn"]);
         $egglet->set_db_type($dbtype);
@@ -201,8 +203,14 @@ class EggService {
             "cors_cache" => $cors_cache,
             "egglet" => $egglet,
         ]);
+
+        $this->text("  -", "Scaffolding output folders.");
         $a->scaffold();
+
+        $this->text("  -", "Scaffolding application core.");
         $a->base();
+
+        $this->text("  -", "Scaffolding engine.");
         $a->generate($egg["entities"]);
 
         // Migration
@@ -224,9 +232,9 @@ class EggService {
 
             $data_count = count($data);
             if ($data_count === 0) {
-                $this->text("Hatching", "Nothing to be migrated?");
+                $this->text("  -", "Nothing to be migrated?");
             } else {
-                $this->text("Hatching", sprintf("Importing %s record%s.", $data_count, $data_count==1?"":"s"));
+                $this->text("  -", sprintf("Importing %s record%s.", $data_count, $data_count==1?"":"s"));
 
                 if (!$this->import_data($egg["database"]["dsn"], $data)) {
                     $this->err("Unable to import data.");
@@ -238,7 +246,9 @@ class EggService {
         // Done
         $this->text("Hatching", "Done. Chirp chirp!");
 
-        $this->text("Hatching", "Thank you for hatching some eggs. You may copy all content in path ${compiled_path} to your server. Enjoy RESTful API from Hatch!");
+        $this->text("Hatching", "Thank you for hatching some eggs.");
+        $this->text("  -", sprintf("You may copy all content in path %s to your server.", $compiled_path));
+        $this->text("Hatching", "Enjoy RESTful API from Hatch!");
     }
 
     private function incubate($to, $entities) {
