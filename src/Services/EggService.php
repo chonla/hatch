@@ -114,6 +114,13 @@ class EggService {
             }
         }
 
+        $meta = [];
+        foreach ($egg["entities"] as $name => $entity) {
+            $result = $egglet->meta($name, $entity);
+            $meta = array_merge($meta, $result);
+        }
+        file_put_contents("./meta.json", json_encode($meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+
         $egglet_count = count($entities);
         if ($egglet_count === 0) {
             $this->err("Nothing to be hatched?");
@@ -250,6 +257,7 @@ class EggService {
 
         $this->text("Hatching", "Thank you for hatching some eggs.");
         $this->text("  -", sprintf("You may copy all content in path %s to your server.", $compiled_path));
+        $this->text("  -", sprintf("If you are using Shelf, you can use \"meta.json\" in %s to generate form.", $compiled_path));
         $this->text("Hatching", "Enjoy RESTful API from Hatch!");
     }
 

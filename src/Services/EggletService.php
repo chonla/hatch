@@ -51,6 +51,33 @@ class EggletService {
         ]
     ];
 
+    public function meta($tab, $structure) {
+        if (!$this->is_auto_off($structure)) {
+            $structure = $this->add_auto_fields($structure);
+        }
+
+        $output = [
+            $tab => $structure
+        ];
+
+        $bloat = [];
+        foreach ($structure as $name => $type) {
+            if ($name !== "@") {
+                if ($this->is_bloat_type($type)) {
+                    $bloat[sprintf("%s_%s", $tab, $name)] = $this->bloat($tab, $name, $type);
+                }
+            }
+        }
+
+        if (count($bloat) > 0) {
+            foreach ($bloat as $k => $v) {
+                $output[$k] = $v;
+            }
+        }
+
+        return $output;
+    }
+
     public function compile($tab, $structure) {
         if (!$this->is_auto_off($structure)) {
             $structure = $this->add_auto_fields($structure);
