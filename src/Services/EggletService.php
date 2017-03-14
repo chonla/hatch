@@ -56,26 +56,26 @@ class EggletService {
             $structure = $this->add_auto_fields($structure);
         }
 
-        $output = [
-            $tab => $structure
+        $out = [
+            $tab => [
+                'attributes' => [],
+                'fields' => [],
+            ],
         ];
 
-        $bloat = [];
-        foreach ($structure as $name => $type) {
-            if ($name !== "@") {
-                if ($this->is_bloat_type($type)) {
-                    $bloat[sprintf("%s_%s", $tab, $name)] = $this->bloat($tab, $name, $type);
+        foreach ($structure as $k => $v) {
+            if ($k === '@') {
+                foreach($v as $ka => $va) {
+                    $out[$tab]['attributes'][$ka] = $va;
                 }
+            } else {
+                $out[$tab]['fields'][] = [
+                    'name' => $k,
+                    'type' => $v,
+                ];
             }
         }
-
-        if (count($bloat) > 0) {
-            foreach ($bloat as $k => $v) {
-                $output[$k] = $v;
-            }
-        }
-
-        return $output;
+        return $out;
     }
 
     public function compile($tab, $structure) {

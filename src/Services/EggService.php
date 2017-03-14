@@ -283,6 +283,7 @@ class EggService {
         }
         $tmpl =<<<EOTMPL
 import { Injectable } from '@angular/core';
+
 @Injectable()
 export class HatchMetaConfig {
     private config: Object = %s;
