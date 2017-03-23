@@ -313,10 +313,7 @@ export class HatchMetaConfig {
 
     fields(key: any) {
         let meta = this.get(key);
-        let out = meta.fields.map((o) => {
-            return o.name;
-        });
-        return out;
+        return meta.fields;
     }
 }
 EOTMPL;
