@@ -286,6 +286,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class HatchMetaConfig {
+    private autofields:string[] = ["id","created_time","updated_time"];
     private config: Object = %s;
     constructor() {}
 
