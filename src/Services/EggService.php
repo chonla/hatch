@@ -292,6 +292,10 @@ export class HatchMetaConfig {
     get(key: any) {
         return this.config[key];
     }
+    
+    keys() {
+        return Object.keys(this.config);
+    }
 }
 EOTMPL;
         file_put_contents(sprintf("%s/hatchmeta.config.ts", $path), sprintf($tmpl, $m));
