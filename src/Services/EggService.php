@@ -92,8 +92,13 @@ class EggService {
         if (!is_dir($compiled_path)) {
             @mkdir($compiled_path, 0777, true);
         }
-        $meta_path = getcwd() . "/meta";
-        chdir($compiled_path);
+        $compiled_path = realpath($compiled_path);
+        $meta_path = $compiled_path . "/meta";
+        $app_path = $compiled_path . "/app";
+        if (!is_dir($app_path)) {
+            @mkdir($app_path, 0777, true);
+        }
+        chdir($app_path);
 
         $this->text("Hatching", "Constructing database.");
         // Create Egglets
@@ -201,7 +206,7 @@ class EggService {
             $cors_cache = array_key_exists("cache", $egg["cors"])?$egg["cors"]["cache"]:0;
         }
 
-        $a = new AppService("../data", [
+        $a = new AppService("../../data", [
             "db_dsn" => $egg["database"]["dsn"],
             "db_user" => $db_user,
             "db_password" => $db_password,
@@ -257,8 +262,8 @@ class EggService {
         $this->text("Hatching", "Done. Chirp chirp!");
 
         $this->text("Hatching", "Thank you for hatching some eggs.");
-        $this->text("  -", sprintf("You may copy all content in path %s to your server.", $compiled_path));
-        $this->text("  -", "If you are using Shelf, you can use meta data in \"meta/ng2\" directory to generate form in Shelf.");
+        $this->text("  -", sprintf("You may copy all content in path %s to your server.", $app_path));
+        $this->text("  -", sprintf("If you are using Shelf, you can use meta data in \"%s/ng2\" directory to generate form in Shelf.", $meta_path));
         $this->text("Hatching", "Enjoy RESTful API from Hatch!");
     }
 
@@ -296,9 +301,9 @@ export class HatchMetaConfig {
 
     get(key: any) {
         let meta = this.config[key];
-        let pri = [];
+        let pri = this.autofields;
         if (meta.attributes && meta.attributes.private) {
-            pri = meta.attributes.private;
+            pri.push.apply(pri, meta.attributes.private);
         }
         if (pri.length > 0) {
             meta.fields = meta.fields.filter((o) => {
